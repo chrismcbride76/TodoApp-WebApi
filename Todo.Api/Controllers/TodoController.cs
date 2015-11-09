@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Web.Http;
+using Todo.Api.Models;
 
 namespace Todo.Api.Controllers
 {
@@ -18,7 +19,7 @@ namespace Todo.Api.Controllers
         }
 
         // POST api/todo
-        public void Post([FromBody]string value)
+        public void Post([FromBody]Models.ToDo todo)
         {
         }
 

@@ -2,7 +2,7 @@
 
 namespace Todo.Api.Models
 {
-    public class Todo
+    public class ToDo
     {
         public String Task { get; set; }
         public DateTime Deadline { get; set; }
