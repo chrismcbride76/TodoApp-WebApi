@@ -6,6 +6,13 @@ namespace Todo.Api.Controllers
 {
     public class TodoController : ApiController
     {
+        private readonly IToDoRepository _toDoRepository;
+
+        public TodoController(IToDoRepository toDoRepository)
+        {
+            _toDoRepository = toDoRepository;
+        }
+
         // GET api/todo
         public IEnumerable<string> Get()
         {
@@ -19,8 +26,10 @@ namespace Todo.Api.Controllers
         }
 
         // POST api/todo
-        public void Post([FromBody]Models.ToDo todo)
+        public IHttpActionResult Post(ToDo todo)
         {
+
+            return CreatedAtRoute("DefaultApi", new { id = todo.Id }, todo);
         }
 
         // PUT api/todo/5
