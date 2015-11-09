@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Todo.Api.Controllers;
 
 namespace Todo.Api.Test
 {
@@ -7,8 +8,9 @@ namespace Todo.Api.Test
     public class TodoControllerShould
     {
         [TestMethod]
-        public void TestMethod1()
+        public void SetLocationHeaderOnPost()
         {
+            TodoController controller = new TodoController();
         }
     }
 }
