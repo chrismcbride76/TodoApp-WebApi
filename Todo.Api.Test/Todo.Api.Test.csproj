@@ -73,6 +73,7 @@
   <ItemGroup>
     <Compile Include="TodoControllerShould.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ToDoRepositoryShould.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Todo.Api\Todo.Api.csproj">

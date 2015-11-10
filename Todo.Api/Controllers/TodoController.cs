@@ -1,45 +1,72 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Results;
+using Todo.Api.Filters;
 using Todo.Api.Models;
 
 namespace Todo.Api.Controllers
 {
+    [ValidateModel]
     public class TodoController : ApiController
     {
-        private readonly IToDoRepository _toDoRepository;
+        private readonly IToDoRepository _repository;
 
-        public TodoController(IToDoRepository toDoRepository)
+        public TodoController(IToDoRepository repository)
         {
-            _toDoRepository = toDoRepository;
+            _repository = repository;
         }
 
         // GET api/todo
-        public IEnumerable<string> Get()
+        public IHttpActionResult Get()
         {
-            return new string[] { "value1", "value2" };
+            var all = _repository.GetAll();
+            return Ok(all);
         }
 
         // GET api/todo/5
-        public string Get(int id)
+        public IHttpActionResult Get(int id)
         {
-            return "value";
+            var todo = _repository.Get(id);
+            if (todo == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(todo);
         }
 
         // POST api/todo
         public IHttpActionResult Post(ToDo todo)
         {
-
-            return CreatedAtRoute("DefaultApi", new { id = todo.Id }, todo);
+            var addedTodo = _repository.Add(todo);
+            return CreatedAtRoute("DefaultApi", new { id = addedTodo.Id }, addedTodo);
         }
 
         // PUT api/todo/5
-        public void Put(int id, [FromBody]string value)
+        public IHttpActionResult Put(int id, ToDo todo)
         {
+            if (id != todo.Id)
+            {
+                return BadRequest("Route doesn't match todo Id");
+            }
+
+
+            todo.Id = id;
+            bool updateResult = _repository.Update(todo);
+            if (!updateResult)
+            {
+                return BadRequest(String.Format("Can't update todo with id {0}", id));
+            }
+
+            return Ok();
         }
 
         // DELETE api/todo/5
         public void Delete(int id)
         {
+            _repository.Remove(id);
         }
     }
 }

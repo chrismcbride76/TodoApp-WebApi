@@ -2,6 +2,7 @@
 using System.Web.Http;
 using Autofac;
 using Autofac.Integration.WebApi;
+using Todo.Api.Controllers;
 using Todo.Api.Models;
 
 namespace Todo.Api
@@ -11,7 +12,7 @@ namespace Todo.Api
         public static void Register(HttpConfiguration config)
         {
             var builder = new ContainerBuilder();
-            builder.RegisterType<ToDoRepository>().As<IToDoRepository>();
+            builder.RegisterType<InMemoryTodoRepository>().As<IToDoRepository>().SingleInstance();
             builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
 
             // Set the dependency resolver to be Autofac.
