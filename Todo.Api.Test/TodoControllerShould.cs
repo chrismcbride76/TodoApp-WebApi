@@ -12,7 +12,7 @@ namespace Todo.Api.Test
     public class TodoControllerShould
     {
         [TestMethod]
-        public void SetLocationHeaderOnPost()
+        public void AddTodo()
         {
             var mockRepository = new Mock<IToDoRepository>();
             TodoController controller = new TodoController(mockRepository.Object);
@@ -20,34 +20,19 @@ namespace Todo.Api.Test
             ToDo todo = new ToDo
             {
                 DeadlineUtc = DateTime.UtcNow,
-                IsCompleted = true,
+                IsCompleted = false,
                 Task = "Some task"
             };
+
+            mockRepository.Setup(x => x.Add(todo)).Returns(todo);
 
             var response = controller.Post(todo) as CreatedAtRouteNegotiatedContentResult<ToDo>;
             response.ShouldNotBeNull();
             response.RouteName.ShouldEqual("DefaultApi");
             response.RouteValues["Id"].ShouldEqual(response.Content.Id);
-            response.Content.ShouldEqual(todo);  // TODO: verify response in the body properly
-        }
+            response.Content.ShouldEqual(todo);
 
-        public void SaveTodoInRepositoryOnPost()
-        {
-            var mockRepository = new Mock<IToDoRepository>(MockBehavior.Strict);
-            TodoController controller = new TodoController(mockRepository.Object);
-
-            ToDo todo = new ToDo
-            {
-                DeadlineUtc = DateTime.UtcNow,
-                IsCompleted = true,
-                Task = "Some task"
-            };
-            //mockRepository.Setup(x => x.CreateNewTodo(todo)).Returns(new Product { Id = 42 });
-            Assert.Fail("Still need to add verification");
-
-            var response = controller.Post(todo);
-
-
+            mockRepository.Verify(x => x.Add(todo), Times.Once());
         }
     }
 }
