@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Net.Http;
-using System.Web.Http;
 using System.Web.Http.Results;
-using System.Web.Http.Routing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Should;
@@ -17,7 +14,8 @@ namespace Todo.Api.Test
         [TestMethod]
         public void SetLocationHeaderOnPost()
         {
-            TodoController controller = new TodoController();
+            var mockRepository = new Mock<IToDoRepository>();
+            TodoController controller = new TodoController(mockRepository.Object);
 
             ToDo todo = new ToDo
             {
