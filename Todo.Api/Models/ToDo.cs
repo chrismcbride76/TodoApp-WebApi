@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Todo.Api.Models
 {
-    public class ToDo
+    public class ToDo: Resource
     {
         public int Id { get; set; }
 

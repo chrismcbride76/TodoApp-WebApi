@@ -61,6 +61,7 @@
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.0\lib\net45\System.Net.Http.Formatting.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -101,15 +102,22 @@
   <ItemGroup>
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\ApiDescriptionController.cs" />
     <Compile Include="Controllers\TodoController.cs" />
     <Compile Include="Filters\ValidateModelAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Links\Link.cs" />
+    <Compile Include="Links\DeleteLink.cs" />
+    <Compile Include="Links\EditLink.cs" />
+    <Compile Include="Links\SelfLink.cs" />
+    <Compile Include="Models\ApiEntry.cs" />
     <Compile Include="Models\IToDoRepository.cs" />
     <Compile Include="Models\ToDo.cs" />
     <Compile Include="Models\InMemoryTodoRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Models\Resource.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
