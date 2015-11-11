@@ -7,23 +7,23 @@ using Todo.Api.Models;
 namespace Todo.Api.Controllers
 {
     [ValidateModel]
-    public class TodoController : ApiController
+    public class TodosController : ApiController
     {
         private readonly IToDoRepository _repository;
 
-        public TodoController(IToDoRepository repository)
+        public TodosController(IToDoRepository repository)
         {
             _repository = repository;
         }
 
-        // GET api/todo
+        // GET api/todos
         public IHttpActionResult Get()
         {
             var all = _repository.GetAll();
             return Ok(all);
         }
 
-        // GET api/todo/5
+        // GET api/todos/5
         public IHttpActionResult Get(int id)
         {
             var todo = _repository.Get(id);
@@ -35,7 +35,7 @@ namespace Todo.Api.Controllers
             return Ok(todo);
         }
 
-        // POST api/todo
+        // POST api/todos
         public IHttpActionResult Post(ToDo todo)
         {
             if (todo == null)
@@ -45,7 +45,7 @@ namespace Todo.Api.Controllers
 
             var addedTodo = _repository.Add(todo);
 
-            var selfUrl = Url.Link("DefaultApi", new {controller = "todo", id = addedTodo.Id});
+            var selfUrl = Url.Link("DefaultApi", new {controller = "todos", id = addedTodo.Id});
             addedTodo.AddLink(new SelfLink(selfUrl));
             addedTodo.AddLink(new EditLink(selfUrl));
             addedTodo.AddLink(new DeleteLink(selfUrl));
@@ -53,7 +53,7 @@ namespace Todo.Api.Controllers
             return CreatedAtRoute("DefaultApi", new { id = addedTodo.Id }, addedTodo);
         }
 
-        // PUT api/todo/5
+        // PUT api/todos/5
         public IHttpActionResult Put(int id, ToDo todo)
         {
             if (todo == null)
@@ -77,7 +77,7 @@ namespace Todo.Api.Controllers
             return Ok();
         }
 
-        // DELETE api/todo/5
+        // DELETE api/todos/5
         public void Delete(int id)
         {
             _repository.Remove(id);
