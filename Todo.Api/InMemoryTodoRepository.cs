@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Todo.Api.Models;
 
-namespace Todo.Api.Models
+namespace Todo.Api
 {
     public class InMemoryTodoRepository : IToDoRepository
     {
@@ -21,13 +22,13 @@ namespace Todo.Api.Models
 
         public ToDo Get(int id)
         {
-            return _data.FirstOrDefault(x => x.Id == id);
+            return _data.FirstOrDefault(x => x.id == id);
         }
 
         public ToDo Add(ToDo item)
         {
             int id = Interlocked.Increment(ref _lastId);
-            item.Id = id;
+            item.id = id;
 
             _data.Add(item);
 
@@ -36,12 +37,12 @@ namespace Todo.Api.Models
 
         public void Remove(int id)
         {
-            _data.RemoveAll(x => x.Id == id);
+            _data.RemoveAll(x => x.id == id);
         }
 
         public bool Update(ToDo item)
         {
-            var entry = _data.FirstOrDefault(x => x.Id == item.Id);
+            var entry = _data.FirstOrDefault(x => x.id == item.id);
             if (entry == null)
                 return false;
 

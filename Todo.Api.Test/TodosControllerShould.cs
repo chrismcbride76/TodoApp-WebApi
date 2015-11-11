@@ -22,17 +22,17 @@ namespace Todo.Api.Test
 
             ToDo todo = new ToDo
             {
-                DeadlineUtc = DateTime.UtcNow,
-                IsCompleted = false,
-                Task = "Some task"
+                deadlineUtc = DateTime.UtcNow,
+                isCompleted = false,
+                task = "Some task"
             };
 
-            mockRepository.Setup(x => x.Add(todo)).Callback(() => todo.Id = 1).Returns(todo);
+            mockRepository.Setup(x => x.Add(todo)).Callback(() => todo.id = 1).Returns(todo);
 
             var response = controller.Post(todo) as CreatedAtRouteNegotiatedContentResult<ToDo>;
             response.ShouldNotBeNull();
             response.RouteName.ShouldEqual("DefaultApi");
-            response.RouteValues["Id"].ShouldEqual(response.Content.Id);
+            response.RouteValues["id"].ShouldEqual(response.Content.id);
             response.Content.ShouldEqual(todo);
 
             mockRepository.Verify(x => x.Add(todo), Times.Once());
@@ -46,15 +46,15 @@ namespace Todo.Api.Test
 
             ToDo todo = new ToDo
             {
-                Id = 3,
-                DeadlineUtc = DateTime.UtcNow,
-                IsCompleted = false,
-                Task = "Some task"
+                id = 3,
+                deadlineUtc = DateTime.UtcNow,
+                isCompleted = false,
+                task = "Some task"
             };
 
-            mockRepository.Setup(x => x.Get(todo.Id)).Returns(todo);
+            mockRepository.Setup(x => x.Get(todo.id)).Returns(todo);
 
-            var response = controller.Get(todo.Id) as OkNegotiatedContentResult<ToDo>;
+            var response = controller.Get(todo.id) as OkNegotiatedContentResult<ToDo>;
             response.ShouldNotBeNull();
             response.Content.ShouldEqual(todo);
         }
@@ -90,7 +90,7 @@ namespace Todo.Api.Test
             Mock<IToDoRepository> mockRepository = new Mock<IToDoRepository>();
             TodosController controller = new TodosController(mockRepository.Object);
 
-            var response = controller.Put(5, new ToDo {Id = 4}) as BadRequestErrorMessageResult;
+            var response = controller.Put(5, new ToDo {id = 4}) as BadRequestErrorMessageResult;
             response.ShouldNotBeNull();
         }
 
@@ -102,7 +102,7 @@ namespace Todo.Api.Test
 
             mockRepository.Setup(x => x.Update(It.IsAny<ToDo>())).Returns(false);
 
-            var response = controller.Put(5, new ToDo { Id = 5 }) as BadRequestErrorMessageResult;
+            var response = controller.Put(5, new ToDo { id = 5 }) as BadRequestErrorMessageResult;
             response.ShouldNotBeNull();
             mockRepository.Verify(x => x.Update(It.IsAny<ToDo>()), Times.Once);
         }
@@ -115,19 +115,19 @@ namespace Todo.Api.Test
 
             var todo = new ToDo
             {
-                Id = 5,
-                Task = "My Task"
+                id = 5,
+                task = "My task"
             };
 
             var updatedTodo = new ToDo
             {
-                Id = 5,
-                Task = "Updated Task"
+                id = 5,
+                task = "Updated task"
             };
 
             mockRepository.Setup(x => x.Update(updatedTodo)).Returns(true);
 
-            var response = controller.Put(todo.Id, updatedTodo) as OkResult;
+            var response = controller.Put(todo.id, updatedTodo) as OkResult;
             response.ShouldNotBeNull();
 
             mockRepository.Verify(x => x.Update(updatedTodo), Times.Once);

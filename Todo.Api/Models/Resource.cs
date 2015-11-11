@@ -1,19 +1,20 @@
 ﻿using System.Collections.Generic;
+using Todo.Api.Links;
 
 namespace Todo.Api.Models
 {
     public abstract class Resource
     {
-        public List<Link> Links { get; private set; }
+        public List<Link> _links { get; private set; }
 
-        public Resource()
+        protected Resource()
         {
-            Links = new List<Link>();
+            _links = new List<Link>();
         }
 
         public void AddLink(Link link)
         {
-            Links.Add(link);
+            _links.Add(link);
         }
     }
 }

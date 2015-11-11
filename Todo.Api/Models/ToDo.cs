@@ -1,21 +1,22 @@
 ﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Todo.Api.Models
 {
     public class ToDo: Resource
     {
-        public int Id { get; set; }
+        public int id { get; set; }
 
         [Required]
-        public String Task { get; set; }
+        public String task { get; set; }
 
         [Required]
-        public DateTime DeadlineUtc { get; set; }
+        public DateTime deadlineUtc { get; set; }
 
         [Required]
-        public bool IsCompleted { get; set; }
+        public bool isCompleted { get; set; }
 
-        public String MoreDetails { get; set; }
+        public String moreDetails { get; set; }
     }
 }

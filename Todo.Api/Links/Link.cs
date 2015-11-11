@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Todo.Api
+namespace Todo.Api.Links
 {
     /// <summary>
     /// A base class for relation links

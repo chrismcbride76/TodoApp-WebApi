@@ -14,18 +14,18 @@ namespace Todo.Api.Test
         {
             var todo = new ToDo
             {
-                Task = "My task"
+                task = "My task"
             };
 
             var repository = new InMemoryTodoRepository();
             todo = repository.Add(todo);
-            todo.Id.ShouldEqual(1);
+            todo.id.ShouldEqual(1);
 
             todo = repository.Add(todo);
-            todo.Id.ShouldEqual(2);
+            todo.id.ShouldEqual(2);
 
             todo = repository.Add(todo);
-            todo.Id.ShouldEqual(3);
+            todo.id.ShouldEqual(3);
         }
 
         [TestMethod]
@@ -33,12 +33,12 @@ namespace Todo.Api.Test
         {
             var todo = new ToDo
             {
-                Task = "MyTask"
+                task = "MyTask"
             };
 
             var repository = new InMemoryTodoRepository();
             repository.Add(todo);
-            repository.Get(todo.Id).ShouldEqual(todo);
+            repository.Get(todo.id).ShouldEqual(todo);
         }
 
         [TestMethod]
@@ -54,7 +54,7 @@ namespace Todo.Api.Test
             var repository = new InMemoryTodoRepository();
             for (int i = 0; i < 5; i++)
             {
-                repository.Add(new ToDo { Task = i.ToString() });
+                repository.Add(new ToDo { task = i.ToString() });
             }
 
             repository.GetAll().Count().ShouldEqual(5);
@@ -64,11 +64,11 @@ namespace Todo.Api.Test
         {
             var repository = new InMemoryTodoRepository();
             var addedTodo = repository.Add(new ToDo());
-            repository.Remove(addedTodo.Id);
-            repository.Get(addedTodo.Id).ShouldBeNull();
+            repository.Remove(addedTodo.id);
+            repository.Get(addedTodo.id).ShouldBeNull();
 
-            repository.Remove(addedTodo.Id);
-            repository.Get(addedTodo.Id).ShouldBeNull();
+            repository.Remove(addedTodo.id);
+            repository.Get(addedTodo.id).ShouldBeNull();
         }
     }
 }
