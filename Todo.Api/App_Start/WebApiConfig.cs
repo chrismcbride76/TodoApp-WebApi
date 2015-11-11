@@ -32,7 +32,8 @@ namespace Todo.Api
 
             config.Routes.MapHttpRoute(
               name: "Api",
-              routeTemplate: "api"
+              routeTemplate: "api",
+              defaults: new { controller = "ApiDescription"}
           );
 
             config.Formatters.JsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html"));

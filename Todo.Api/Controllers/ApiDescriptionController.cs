@@ -9,13 +9,12 @@ namespace Todo.Api.Controllers
     /// </summary>
     public class ApiDescriptionController : ApiController
     {
-        [Route("~/api")]
         public IHttpActionResult Get()
         {
             var entry = new ApiEntry();
 
             var todoUrl = Url.Link("DefaultApi", new { controller = "todo" });
-            entry.AddLink(new SelfLink(Url.Link("Api", new { controller = "apidescription" })));
+            entry.AddLink(new SelfLink(Url.Link("api", new { controller = "ApiDescription" })));
             entry.AddLink(new EditLink(todoUrl));
             entry.AddLink(new DeleteLink(todoUrl));
             return Ok(entry);
