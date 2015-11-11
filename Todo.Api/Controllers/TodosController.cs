@@ -23,12 +23,22 @@ namespace Todo.Api.Controllers
         }
 
         // GET api/todos
-        [EnableQuery(PageSize = 20)]
-        public IHttpActionResult Get()
+        public IHttpActionResult Get(ODataQueryOptions<ToDo> options)
         {
-            var all = _repository.GetAll();
+            var settings = new ODataQuerySettings()
+            {
+                PageSize = 20
+            };
 
-            return Ok(all);
+            var results = _repository.GetAll();
+            var filtered = options.ApplyTo(results.AsQueryable(), settings);
+
+            var pagedResult = new PageResult<ToDo>(
+                filtered as IEnumerable<ToDo>,
+                Request.ODataProperties().NextLink,
+                results.Count());
+
+            return Ok(pagedResult);
         }
 
         // GET api/todos/5

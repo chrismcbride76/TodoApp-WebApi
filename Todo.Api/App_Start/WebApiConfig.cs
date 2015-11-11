@@ -3,9 +3,6 @@ using System.Reflection;
 using System.Web.Http;
 using Autofac;
 using Autofac.Integration.WebApi;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using Todo.Api.Models;
 
 namespace Todo.Api
 {

@@ -1,5 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Web.Http;
+using System.Web.Http.OData;
+using System.Web.Http.OData.Builder;
+using System.Web.Http.OData.Query;
 using System.Web.Http.Results;
 using System.Web.Http.Routing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -64,15 +69,16 @@ namespace Todo.Api.Test
         {
             Mock<IToDoRepository> mockRepository = new Mock<IToDoRepository>();
             TodosController controller = new TodosController(mockRepository.Object);
+            var opts = SetupDefaultODataQuery(controller);
 
             var allTodos = new List<ToDo>();
             mockRepository.Setup(x => x.GetAll()).Returns(allTodos);
 
-            var response = controller.Get() as OkNegotiatedContentResult<IEnumerable<ToDo>>;
+           
+            var response = controller.Get(opts) as OkNegotiatedContentResult<PageResult<ToDo>>;
             response.ShouldNotBeNull();
-            response.Content.ShouldEqual(allTodos);
+            response.Content.Items.ShouldEqual(allTodos);
         }
-
 
         [TestMethod]
         public void ReturnNotFoundIfCantFindTodo()
@@ -154,5 +160,14 @@ namespace Todo.Api.Test
             controller.Url = mockUrlHelper.Object;
         }
 
+        private ODataQueryOptions<ToDo> SetupDefaultODataQuery(ApiController controller)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "");
+            ODataModelBuilder modelBuilder = new ODataConventionModelBuilder();
+            modelBuilder.EntitySet<ToDo>("Todo");
+            var opts = new ODataQueryOptions<ToDo>(new ODataQueryContext(modelBuilder.GetEdmModel(), typeof(ToDo)), request);
+            controller.Request = request;
+            return opts;
+        }
     }
 }

@@ -9,24 +9,24 @@ namespace Todo.Api.Links
     public class Link
     {
         [DataMember]
-        public string Href { get; private set; }
+        public string href { get; private set; }
 
         [DataMember]
-        public string Rel { get; private set; }
+        public string rel { get; private set; }
 
         [DataMember]
-        public string Method { get; private set; }
+        public string method { get; private set; }
 
         public Link(string rel, string href, string method)
         {
-            Rel = rel;
-            Href = href;
-            Method = method;
+            this.rel = rel;
+            this.href = href;
+            this.method = method;
         }
 
         public override string ToString()
         {
-            return Href;
+            return href;
         }
     }
 }
