@@ -30,6 +30,11 @@ namespace Todo.Api
                 defaults: new { id = RouteParameter.Optional }
             );
 
+            config.Routes.MapHttpRoute(
+              name: "Api",
+              routeTemplate: "api"
+          );
+
             config.Formatters.JsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html"));
 
             // use camel case property names so that it feels more natural to clients.
