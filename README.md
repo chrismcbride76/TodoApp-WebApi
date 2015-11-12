@@ -13,7 +13,7 @@ To build and run the service:
 1. Open Todo.sln in Visual Studio 2013
 2. Ensure Todo.Api is selected as your startup project
 3. Run the project
-⋅⋅* Note: project dependencies should automatically get pulled in by nuget on first build
+  * Note: project dependencies should automatically get pulled in by nuget on first build
 
 Making Requests
 ---------------
@@ -33,7 +33,7 @@ Cache-Control: no-cache
 
 #### Response
 
-```
+```json
 {
   "_links": [
     {
@@ -65,11 +65,9 @@ URI
 
 ### Add a todo to the list
 
-Operation
+Operation: POST /api/todos
 
-POST /api/todos
-
-```
+```json
 POST /api/todos HTTP/1.1
 Host: localhost:10522
 Content-Type: application/json
@@ -85,7 +83,7 @@ Cache-Control: no-cache
 
 #### Response:
 
-```
+```json
 {
   "id": 1,
   "task": "Mow the lawn",
@@ -114,9 +112,7 @@ Cache-Control: no-cache
 
 ### View more information about a todo
 
-Operation
-
-GET /api/todos/{id}
+Operation: GET /api/todos/{id}
 
 ```
 GET /api/todos/1 HTTP/1.1
@@ -125,7 +121,7 @@ Content-Type: application/json
 Cache-Control: no-cache
 ```
 ### Response
-```
+```json
 {
   "id": 1,
   "task": "Mow the lawn",
@@ -152,36 +148,31 @@ Cache-Control: no-cache
 }
 ```
 
-### Update a todo (ie. mark completed)
+### Update a todo (mark completed, etc.)
 
-Operation
+Operation: PUT /api/todos/{id}
 
-PUT /api/todos/{id}
-
-```
+```json
 PUT /api/todos/1 HTTP/1.1
 Host: localhost:10522
 Content-Type: application/json
 Cache-Control: no-cache
 
 {
-  "task": "Mow the lawn",
+  "task": "Mow the front and back yard",
   "deadlineUtc": "2015-11-11T20:05:32.773Z",
   "completed": true,
-  "moreDetails": "Make sure to mow the front and back yards"
+  "moreDetails": "Make sure to pick up the grass trimmings"
 }
 ```
 
 ### Response
 
-
-
+`200 OK`
 
 ### Delete a todo
 
-Operation
-
-DELETE /api/todos/{id}
+Operation: DELETE /api/todos/{id}
 
 ```
 DELETE /api/todos/1 HTTP/1.1
@@ -196,11 +187,165 @@ Cache-Control: no-cache
 204 No Content
 ```
 
+### List all todos
 
-As a user, I can see all the TODOs on the list in an overview.
-As a user, I can mark a TODO as completed.
+```
+GET /api/todos HTTP/1.1
+Host: localhost:10522
+Content-Type: application/json
+Cache-Control: no-cache
+```
+### Response
+
+```json
+{
+  "Items": [
+    {
+      "id": 1,
+      "task": "Take out the trash",
+      "deadlineUtc": "2015-11-11T20:05:32.773Z",
+      "completed": false,
+      "moreDetails": null,
+      "_links": [
+        {
+          "href": "http://localhost:10522/api/todos/1",
+          "rel": "self",
+          "method": "GET"
+        },
+        {
+          "href": "http://localhost:10522/api/todos/1",
+          "rel": "edit",
+          "method": "PUT"
+        },
+        {
+          "href": "http://localhost:10522/api/todos/1",
+          "rel": "delete",
+          "method": "DELETE"
+        }
+      ]
+    },
+    ...
+    ...
+    ...
+    {
+      "id": 25,
+      "task": "Take out the trash",
+      "deadlineUtc": "2015-11-11T20:05:32.773Z",
+      "completed": false,
+      "moreDetails": null,
+      "_links": [
+        {
+          "href": "http://localhost:10522/api/todos/25",
+          "rel": "self",
+          "method": "GET"
+        },
+        {
+          "href": "http://localhost:10522/api/todos/25",
+          "rel": "edit",
+          "method": "PUT"
+        },
+        {
+          "href": "http://localhost:10522/api/todos/25",
+          "rel": "delete",
+          "method": "DELETE"
+        }
+      ]
+    }
+  ]
+}
+```
+
+The API supports OData query options, allowing the client to specify filtering, ordering, paging, etc.
+
+### See only todos that haven't been completed
+
+#### Request
+
+```
+GET /api/todos?$filter=completed eq false HTTP/1.1
+Host: localhost:10522
+Content-Type: application/json
+Cache-Control: no-cache
+```
+#### Response
+
+```
+{
+  "Items": [
+    {
+      "id": 1,
+      "task": "Mow the lawn",
+      "deadlineUtc": "2015-11-11T20:05:32.773Z",
+      "completed": false,
+      "moreDetails": "Make sure to mow the front and back yards",
+      "_links": [
+        {
+          "href": "http://localhost:10522/api/todos/1",
+          "rel": "self",
+          "method": "GET"
+        },
+        {
+          "href": "http://localhost:10522/api/todos/1",
+          "rel": "edit",
+          "method": "PUT"
+        },
+        {
+          "href": "http://localhost:10522/api/todos/1",
+          "rel": "delete",
+          "method": "DELETE"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "task": "Mow the lawn",
+      "deadlineUtc": "2015-11-11T20:05:32.773Z",
+      "completed": false,
+      "moreDetails": "Make sure to mow the front and back yards",
+      "_links": [
+        {
+          "href": "http://localhost:10522/api/todos/2",
+          "rel": "self",
+          "method": "GET"
+        },
+        {
+          "href": "http://localhost:10522/api/todos/2",
+          "rel": "edit",
+          "method": "PUT"
+        },
+        {
+          "href": "http://localhost:10522/api/todos/2",
+          "rel": "delete",
+          "method": "DELETE"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "task": "Take out the trash",
+      "deadlineUtc": "2015-11-11T20:05:32.773Z",
+      "completed": false,
+      "moreDetails": null,
+      "_links": [
+        {
+          "href": "http://localhost:10522/api/todos/8",
+          "rel": "self",
+          "method": "GET"
+        },
+        {
+          "href": "http://localhost:10522/api/todos/8",
+          "rel": "edit",
+          "method": "PUT"
+        },
+        {
+          "href": "http://localhost:10522/api/todos/8",
+          "rel": "delete",
+          "method": "DELETE"
+        }
+      ]
+    }
+  ]
+  ```
+
+
 As a user, when I see all the TODOs in the overview, if today's date is past the TODO's deadline, highlight it.
-
-
-
-http://localhost:10522/api/todos
