@@ -7,25 +7,25 @@ namespace Todo.Api
 {
     public class InMemoryTodoRepository : IToDoRepository
     {
-        private readonly List<ToDo> _data;
+        private readonly List<TodoModel> _data;
         private int _lastId = 0;
 
-        public InMemoryTodoRepository(List<ToDo> initialDataSet = null)
+        public InMemoryTodoRepository(List<TodoModel> initialDataSet = null)
         {
-            _data = initialDataSet ?? new List<ToDo>();
+            _data = initialDataSet ?? new List<TodoModel>();
         }
 
-        public IEnumerable<ToDo> GetAll()
+        public IEnumerable<TodoModel> GetAll()
         {
             return _data.AsReadOnly();
         }
 
-        public ToDo Get(int id)
+        public TodoModel Get(int id)
         {
             return _data.FirstOrDefault(x => x.id == id);
         }
 
-        public ToDo Add(ToDo item)
+        public TodoModel Add(TodoModel item)
         {
             int id = Interlocked.Increment(ref _lastId);
             item.id = id;
@@ -35,18 +35,21 @@ namespace Todo.Api
             return item;
         }
 
-        public void Remove(int id)
+        public bool Delete(int id)
         {
-            _data.RemoveAll(x => x.id == id);
+            return _data.RemoveAll(x => x.id == id) > 0;
         }
 
-        public bool Update(ToDo item)
+        public bool Update(TodoModel item)
         {
             var entry = _data.FirstOrDefault(x => x.id == item.id);
             if (entry == null)
                 return false;
 
-            entry = item;
+            entry.completed = item.completed;
+            entry.deadlineUtc = item.deadlineUtc;
+            entry.moreDetails = item.moreDetails;
+            entry.task = item.task;
             return true;
         }
     }

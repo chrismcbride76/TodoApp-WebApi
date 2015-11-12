@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web.Http;
-using System.Web.Http.OData;
+using System.Web.Http.OData.Query;
+using AutoMapper;
 using Todo.Api.Filters;
-using Todo.Api.Links;
 using Todo.Api.Models;
 
 namespace Todo.Api.Controllers
@@ -12,19 +14,26 @@ namespace Todo.Api.Controllers
     public class TodosController : ApiController
     {
         private readonly IToDoRepository _repository;
+        private readonly IMappingEngine _mapper;
 
-        public TodosController(IToDoRepository repository)
+        public TodosController(IToDoRepository repository, IMappingEngine mapper)
         {
             _repository = repository;
+            _mapper = mapper;
         }
 
         // GET api/todos
-        [EnableQuery]
-        public IHttpActionResult Get(bool overdue = false)
+        public IHttpActionResult Get(ODataQueryOptions<TodoModel> options, bool overdue = false)
         {
-            var results = overdue ? _repository.GetAll().Where(x => !x.completed && DateTime.UtcNow > x.deadlineUtc) : _repository.GetAll();
+            var todos = overdue == false
+                ? _repository.GetAll()
+                : _repository.GetAll().Where(x => !x.completed && x.deadlineUtc < DateTime.UtcNow);
 
-            return Ok(results);
+            IEnumerable<TodoModel> results = (IEnumerable<TodoModel>)options.ApplyTo(todos.AsQueryable(), new ODataQuerySettings());
+
+            var representation = results.Select(_mapper.Map<TodoModel, TodoRepresentation>).ToList();
+
+            return Ok(representation);
         }
 
         // GET api/todos/5
@@ -36,11 +45,13 @@ namespace Todo.Api.Controllers
                 return NotFound();
             }
 
-            return Ok(todo);
+            var representation = _mapper.Map <TodoRepresentation>(todo);
+
+            return Ok(representation);
         }
 
         // POST api/todos
-        public IHttpActionResult Post(ToDo todo)
+        public IHttpActionResult Post(TodoModel todo)
         {
             if (todo == null)
             {
@@ -48,17 +59,13 @@ namespace Todo.Api.Controllers
             }
 
             var addedTodo = _repository.Add(todo);
+            var representation = _mapper.Map<TodoRepresentation>(addedTodo);
 
-            var selfUrl = Url.Link("DefaultApi", new {controller = "todos", id = addedTodo.id});
-            addedTodo.AddLink(new SelfLink(selfUrl));
-            addedTodo.AddLink(new EditLink(selfUrl));
-            addedTodo.AddLink(new DeleteLink(selfUrl));
-
-            return CreatedAtRoute("DefaultApi", new { id = addedTodo.id }, addedTodo);
+            return CreatedAtRoute("DefaultApi", new {representation.id }, representation);
         }
 
         // PUT api/todos/5
-        public IHttpActionResult Put(int id, ToDo todo)
+        public IHttpActionResult Put(int id, TodoModel todo)
         {
             if (todo == null)
             {
@@ -78,7 +85,12 @@ namespace Todo.Api.Controllers
         // DELETE api/todos/5
         public void Delete(int id)
         {
-            _repository.Remove(id);
+            if (_repository.Delete(id))
+            {
+                return; 
+            }
+            
+            throw new HttpResponseException(HttpStatusCode.NotFound);
         }
     }
 }
