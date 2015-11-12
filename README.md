@@ -16,6 +16,12 @@ To build and run the service:
   * Note: project dependencies should automatically get pulled in by nuget on first build
   * Note: the project uses an in-memory database, meaning the todo list does not persist between app restarts
   
+Future Enhancements
+-------------------
+  * Store todo lists in persistent storage
+  * Add users and user authentication
+  * Add nice web based UI
+  
 Making Requests
 ---------------
 
