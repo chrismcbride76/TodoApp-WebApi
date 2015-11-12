@@ -23,11 +23,15 @@ namespace Todo.Api.Controllers
         }
 
         // GET api/todos
-        public IHttpActionResult Get(ODataQueryOptions<TodoModel> options, bool overdue = false)
+        public IHttpActionResult Get(ODataQueryOptions<TodoModel> options, bool? overdue = null)
         {
-            var todos = overdue == false
-                ? _repository.GetAll()
-                : _repository.GetAll().Where(x => !x.completed && x.deadlineUtc < DateTime.UtcNow);
+            IEnumerable<TodoModel> todos = _repository.GetAll();
+            if (overdue.HasValue)
+            {
+                todos = overdue == false
+                    ? todos.Where(x => !x.completed && x.deadlineUtc >= DateTime.UtcNow)
+                    : todos.Where(x => !x.completed && x.deadlineUtc < DateTime.UtcNow);
+            }
 
             IEnumerable<TodoModel> results = (IEnumerable<TodoModel>)options.ApplyTo(todos.AsQueryable(), new ODataQuerySettings());
 

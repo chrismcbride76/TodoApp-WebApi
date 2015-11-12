@@ -129,6 +129,28 @@ namespace Todo.Api.Test
         }
 
         [TestMethod]
+        public void GetTodosThatAreNotOverdue()
+        {
+            var controller = new TodosController(_mockRepository.Object, Mapper.Engine);
+            var query = SetupDefaultODataQuery(controller);
+            var allTodos = new List<TodoModel>
+            {
+                new TodoModel {completed = true, deadlineUtc = DateTime.UtcNow.Subtract(TimeSpan.FromDays(1))}, // deadline was yesterday, but its already completed
+                new TodoModel {id = 5, completed = false, deadlineUtc = DateTime.UtcNow.Subtract(TimeSpan.FromDays(1))},// overdue
+                new TodoModel {completed = false, deadlineUtc = DateTime.UtcNow.Add(TimeSpan.FromDays(1))}, // not due until tomorrow
+                new TodoModel {completed = false, deadlineUtc = DateTime.UtcNow.Add(TimeSpan.FromDays(1))},  // not due until tomorrow
+                new TodoModel {completed = true, deadlineUtc = DateTime.UtcNow.Add(TimeSpan.FromDays(1))},  // not due until tomorrow
+            };
+            _mockRepository.Setup(x => x.GetAll()).Returns(allTodos);
+
+            var response = controller.Get(query, false) as OkNegotiatedContentResult<List<TodoRepresentation>>;
+            response.ShouldNotBeNull();
+            response.Content.Count.ShouldEqual(2);
+            AreEquivalent(allTodos[2], response.Content[0]).ShouldBeTrue(); 
+            AreEquivalent(allTodos[3], response.Content[1]).ShouldBeTrue(); 
+        }
+
+        [TestMethod]
         public void ReturnNotFoundIfCantFindTodo()
         {
             var controller = new TodosController(_mockRepository.Object, Mapper.Engine);
