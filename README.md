@@ -15,7 +15,7 @@ To build and run the service:
 3. Run the project
   * Note: project dependencies should automatically get pulled in by nuget on first build
   * Note: the project uses an in-memory database, meaning the todo list does not persist between app restarts
-  
+ 
 Future Enhancements
 -------------------
   * Store todo lists in persistent storage
@@ -447,3 +447,95 @@ Cache-Control: no-cache
   }
 ]
 ```
+
+### See outstanding todos (todos that have not been completed and where todays date is before the deadline)
+* Order by deadline
+
+Operation: `GET /api/todos?overdue=false&$orderby=deadlineUtc`
+
+#### Request
+
+```
+GET /api/todos?overdue=false&$orderby=deadlineUtc HTTP/1.1
+Host: localhost:10522
+Content-Type: application/json
+Cache-Control: no-cache
+```
+
+#### Response
+```
+[
+  {
+    "id": 6,
+    "task": "Mow the lawn 6",
+    "deadlineUtc": "2015-11-12T18:05:32.773Z",
+    "completed": false,
+    "moreDetails": "Make sure to mow the front and back yards",
+    "_links": [
+      {
+        "href": "http://localhost:10522/api/todos/6",
+        "rel": "self",
+        "method": "GET"
+      },
+      {
+        "href": "http://localhost:10522/api/todos/6",
+        "rel": "edit",
+        "method": "PUT"
+      },
+      {
+        "href": "http://localhost:10522/api/todos/6",
+        "rel": "delete",
+        "method": "DELETE"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "task": "Mow the lawn 4",
+    "deadlineUtc": "2015-11-13T20:05:32.773Z",
+    "completed": false,
+    "moreDetails": "Make sure to mow the front and back yards",
+    "_links": [
+      {
+        "href": "http://localhost:10522/api/todos/4",
+        "rel": "self",
+        "method": "GET"
+      },
+      {
+        "href": "http://localhost:10522/api/todos/4",
+        "rel": "edit",
+        "method": "PUT"
+      },
+      {
+        "href": "http://localhost:10522/api/todos/4",
+        "rel": "delete",
+        "method": "DELETE"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "task": "Mow the lawn 5",
+    "deadlineUtc": "2015-11-14T20:05:32.773Z",
+    "completed": false,
+    "moreDetails": "Make sure to mow the front and back yards",
+    "_links": [
+      {
+        "href": "http://localhost:10522/api/todos/5",
+        "rel": "self",
+        "method": "GET"
+      },
+      {
+        "href": "http://localhost:10522/api/todos/5",
+        "rel": "edit",
+        "method": "PUT"
+      },
+      {
+        "href": "http://localhost:10522/api/todos/5",
+        "rel": "delete",
+        "method": "DELETE"
+      }
+    ]
+  }
+]
+````
