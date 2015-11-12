@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Web.Http;
-using System.Web.Http.OData;
-using System.Web.Http.OData.Builder;
-using System.Web.Http.OData.Query;
+using System.Linq;
 using System.Web.Http.Results;
 using System.Web.Http.Routing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -18,21 +14,22 @@ namespace Todo.Api.Test
     [TestClass]
     public class TodosControllerShould
     {
+        Mock<IToDoRepository> _mockRepository = new Mock<IToDoRepository>();
         [TestMethod]
         public void AddTodo()
         {
-            Mock<IToDoRepository> mockRepository = new Mock<IToDoRepository>();
-            TodosController controller = new TodosController(mockRepository.Object);
+
+            TodosController controller = new TodosController(_mockRepository.Object);
             SetupMockUrlHelper(controller);
 
             ToDo todo = new ToDo
             {
                 deadlineUtc = DateTime.UtcNow,
-                isCompleted = false,
+                completed = false,
                 task = "Some task"
             };
 
-            mockRepository.Setup(x => x.Add(todo)).Callback(() => todo.id = 1).Returns(todo);
+            _mockRepository.Setup(x => x.Add(todo)).Callback(() => todo.id = 1).Returns(todo);
 
             var response = controller.Post(todo) as CreatedAtRouteNegotiatedContentResult<ToDo>;
             response.ShouldNotBeNull();
@@ -40,24 +37,23 @@ namespace Todo.Api.Test
             response.RouteValues["id"].ShouldEqual(response.Content.id);
             response.Content.ShouldEqual(todo);
 
-            mockRepository.Verify(x => x.Add(todo), Times.Once());
+            _mockRepository.Verify(x => x.Add(todo), Times.Once());
         }
 
         [TestMethod]
         public void GetTodo()
         {
-            Mock<IToDoRepository> mockRepository = new Mock<IToDoRepository>();
-            TodosController controller = new TodosController(mockRepository.Object);
+            TodosController controller = new TodosController(_mockRepository.Object);
 
             ToDo todo = new ToDo
             {
                 id = 3,
                 deadlineUtc = DateTime.UtcNow,
-                isCompleted = false,
+                completed = false,
                 task = "Some task"
             };
 
-            mockRepository.Setup(x => x.Get(todo.id)).Returns(todo);
+            _mockRepository.Setup(x => x.Get(todo.id)).Returns(todo);
 
             var response = controller.Get(todo.id) as OkNegotiatedContentResult<ToDo>;
             response.ShouldNotBeNull();
@@ -69,22 +65,45 @@ namespace Todo.Api.Test
         {
             Mock<IToDoRepository> mockRepository = new Mock<IToDoRepository>();
             TodosController controller = new TodosController(mockRepository.Object);
-            var opts = SetupDefaultODataQuery(controller);
 
-            var allTodos = new List<ToDo>();
+            var allTodos = new List<ToDo>
+            {
+                new ToDo {completed = true, deadlineUtc = DateTime.UtcNow.Subtract(TimeSpan.FromDays(1))}, // deadline was yesterday, but its already completed
+                new ToDo {completed = false, deadlineUtc = DateTime.UtcNow.Subtract(TimeSpan.FromDays(1))},// overdue
+                new ToDo {completed = false, deadlineUtc = DateTime.UtcNow.Add(TimeSpan.FromDays(1))}, // not due until tomorrow
+                new ToDo {completed = true, deadlineUtc = DateTime.UtcNow.Add(TimeSpan.FromDays(1))},  // not due until tomorrow
+            };
             mockRepository.Setup(x => x.GetAll()).Returns(allTodos);
 
-           
-            var response = controller.Get(opts) as OkNegotiatedContentResult<PageResult<ToDo>>;
+            var response = controller.Get() as OkNegotiatedContentResult<IEnumerable<ToDo>>;
             response.ShouldNotBeNull();
-            response.Content.Items.ShouldEqual(allTodos);
+            response.Content.ShouldEqual(allTodos);
+        }
+
+        [TestMethod]
+        public void GetOverdueTodos()
+        {
+            TodosController controller = new TodosController(_mockRepository.Object);
+
+            var allTodos = new List<ToDo>
+            {
+                new ToDo {completed = true, deadlineUtc = DateTime.UtcNow.Subtract(TimeSpan.FromDays(1))}, // deadline was yesterday, but its already completed
+                new ToDo {completed = false, deadlineUtc = DateTime.UtcNow.Subtract(TimeSpan.FromDays(1))},// overdue
+                new ToDo {completed = false, deadlineUtc = DateTime.UtcNow.Add(TimeSpan.FromDays(1))}, // not due until tomorrow
+                new ToDo {completed = true, deadlineUtc = DateTime.UtcNow.Add(TimeSpan.FromDays(1))},  // not due until tomorrow
+            };
+            _mockRepository.Setup(x => x.GetAll()).Returns(allTodos);
+
+            var response = controller.Get(true) as OkNegotiatedContentResult<IEnumerable<ToDo>>;
+            response.ShouldNotBeNull();
+            response.Content.Count().ShouldEqual(1);
+            response.Content.Single().ShouldEqual(allTodos[1]);
         }
 
         [TestMethod]
         public void ReturnNotFoundIfCantFindTodo()
         {
-            Mock<IToDoRepository> mockRepository = new Mock<IToDoRepository>();
-            TodosController controller = new TodosController(mockRepository.Object);
+            TodosController controller = new TodosController(_mockRepository.Object);
 
             var response = controller.Get(1) as NotFoundResult;
             response.ShouldNotBeNull();
@@ -93,8 +112,7 @@ namespace Todo.Api.Test
         [TestMethod]
         public void ReturnBadRequestWhenPutIdDoesntMatchTodo()
         {
-            Mock<IToDoRepository> mockRepository = new Mock<IToDoRepository>();
-            TodosController controller = new TodosController(mockRepository.Object);
+            TodosController controller = new TodosController(_mockRepository.Object);
 
             var response = controller.Put(5, new ToDo {id = 4}) as BadRequestErrorMessageResult;
             response.ShouldNotBeNull();
@@ -103,21 +121,19 @@ namespace Todo.Api.Test
         [TestMethod]
         public void ReturnBadRequestWhenPutCantUpdate()
         {
-            Mock<IToDoRepository> mockRepository = new Mock<IToDoRepository>();
-            TodosController controller = new TodosController(mockRepository.Object);
+            TodosController controller = new TodosController(_mockRepository.Object);
 
-            mockRepository.Setup(x => x.Update(It.IsAny<ToDo>())).Returns(false);
+            _mockRepository.Setup(x => x.Update(It.IsAny<ToDo>())).Returns(false);
 
             var response = controller.Put(5, new ToDo { id = 5 }) as BadRequestErrorMessageResult;
             response.ShouldNotBeNull();
-            mockRepository.Verify(x => x.Update(It.IsAny<ToDo>()), Times.Once);
+            _mockRepository.Verify(x => x.Update(It.IsAny<ToDo>()), Times.Once);
         }
 
         [TestMethod]
         public void UpdateTodoOnPut()
         {
-            Mock<IToDoRepository> mockRepository = new Mock<IToDoRepository>();
-            TodosController controller = new TodosController(mockRepository.Object);
+            TodosController controller = new TodosController(_mockRepository.Object);
 
             var todo = new ToDo
             {
@@ -131,24 +147,23 @@ namespace Todo.Api.Test
                 task = "Updated task"
             };
 
-            mockRepository.Setup(x => x.Update(updatedTodo)).Returns(true);
+            _mockRepository.Setup(x => x.Update(updatedTodo)).Returns(true);
 
             var response = controller.Put(todo.id, updatedTodo) as OkResult;
             response.ShouldNotBeNull();
 
-            mockRepository.Verify(x => x.Update(updatedTodo), Times.Once);
+            _mockRepository.Verify(x => x.Update(updatedTodo), Times.Once);
         }
 
         [TestMethod]
         public void DeleteTodo()
         {
-            Mock<IToDoRepository> mockRepository = new Mock<IToDoRepository>();
-            TodosController controller = new TodosController(mockRepository.Object);
+            TodosController controller = new TodosController(_mockRepository.Object);
 
-            mockRepository.Setup(x => x.Remove(1));
+            _mockRepository.Setup(x => x.Remove(1));
 
             controller.Delete(1);
-            mockRepository.Verify(x => x.Remove(1), Times.Once);
+            _mockRepository.Verify(x => x.Remove(1), Times.Once);
         }
 
         private static void SetupMockUrlHelper(TodosController controller)
@@ -158,16 +173,6 @@ namespace Todo.Api.Test
             var mockUrlHelper = new Mock<UrlHelper>();
             mockUrlHelper.Setup(x => x.Link(It.IsAny<string>(), It.IsAny<object>())).Returns(locationUrl);
             controller.Url = mockUrlHelper.Object;
-        }
-
-        private ODataQueryOptions<ToDo> SetupDefaultODataQuery(ApiController controller)
-        {
-            var request = new HttpRequestMessage(HttpMethod.Get, "");
-            ODataModelBuilder modelBuilder = new ODataConventionModelBuilder();
-            modelBuilder.EntitySet<ToDo>("Todo");
-            var opts = new ODataQueryOptions<ToDo>(new ODataQueryContext(modelBuilder.GetEdmModel(), typeof(ToDo)), request);
-            controller.Request = request;
-            return opts;
         }
     }
 }

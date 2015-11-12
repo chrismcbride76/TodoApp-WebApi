@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Todo.Api.Models
@@ -15,7 +14,7 @@ namespace Todo.Api.Models
         public DateTime deadlineUtc { get; set; }
 
         [Required]
-        public bool isCompleted { get; set; }
+        public bool completed { get; set; }
 
         public String moreDetails { get; set; }
     }

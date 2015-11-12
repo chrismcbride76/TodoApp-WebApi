@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.OData;
-using System.Web.Http.OData.Extensions;
-using System.Web.Http.OData.Query;
 using Todo.Api.Filters;
 using Todo.Api.Links;
 using Todo.Api.Models;
@@ -23,22 +19,12 @@ namespace Todo.Api.Controllers
         }
 
         // GET api/todos
-        public IHttpActionResult Get(ODataQueryOptions<ToDo> options)
+        [EnableQuery]
+        public IHttpActionResult Get(bool overdue = false)
         {
-            var settings = new ODataQuerySettings()
-            {
-                PageSize = 20
-            };
+            var results = overdue ? _repository.GetAll().Where(x => !x.completed && DateTime.UtcNow > x.deadlineUtc) : _repository.GetAll();
 
-            var results = _repository.GetAll();
-            var filtered = options.ApplyTo(results.AsQueryable(), settings);
-
-            var pagedResult = new PageResult<ToDo>(
-                filtered as IEnumerable<ToDo>,
-                Request.ODataProperties().NextLink,
-                results.Count());
-
-            return Ok(pagedResult);
+            return Ok(results);
         }
 
         // GET api/todos/5
@@ -78,12 +64,6 @@ namespace Todo.Api.Controllers
             {
                 return BadRequest("Todo can't be null");
             }
-
-            if (id != todo.id)
-            {
-                return BadRequest("Route doesn't match todo id");
-            }
-
 
             todo.id = id;
             bool updateResult = _repository.Update(todo);

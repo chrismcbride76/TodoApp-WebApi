@@ -124,6 +124,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Links\CreateLink.cs" />
     <Compile Include="Links\Link.cs" />
     <Compile Include="Links\DeleteLink.cs" />
     <Compile Include="Links\EditLink.cs" />

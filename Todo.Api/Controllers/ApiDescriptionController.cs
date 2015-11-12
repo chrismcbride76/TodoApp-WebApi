@@ -16,6 +16,7 @@ namespace Todo.Api.Controllers
             var todoUrl = Url.Link("DefaultApi", new { controller = "todos" });
             entry.AddLink(new SelfLink(Url.Link("api", new { controller = "ApiDescription" })));
             entry.AddLink(new ListLink(todoUrl));
+            entry.AddLink(new CreateLink(todoUrl));
             return Ok(entry);
         }
     }
