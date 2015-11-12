@@ -14,13 +14,18 @@ To build and run the service:
 2. Ensure Todo.Api is selected as your startup project
 3. Run the project
   * Note: project dependencies should automatically get pulled in by nuget on first build
-
+  * Note: the project uses an in-memory database, meaning the todo list does not persist between app restarts
+  
 Making Requests
 ---------------
 
 All API URLs start with `http://[domain]/api`, where `[domain]` is the domain name of the service.  When running through visual studio, this will be `localhost:10522'.  The port number may be different depending on your setup.
 
-Any part of the API can be reached starting from the main entry point at `http://[domain]/api`.  The entry point lists the resources provided by the server, as well as how to access the rest of the api.
+Any part of the API can be reached starting from the main entry point at `http://[domain]/api`.  The entry point lists the resources provided by the server, as well as how to access the api.
+
+## Api Description
+
+URI: `http://localhost:10522/api`
 
 #### Request
 
@@ -59,20 +64,19 @@ Cache-Control: no-cache
 
 The api provides operations using the /todos resource.  Use todos resource for creating, updating, deleting, and listing todo related details.
 
-URI
-
-`http://localhost:10522/api/todos`
+URI: `http://localhost:10522/api/todos`
 
 ### Add a todo to the list
 
-Operation: POST /api/todos
+Operation: `POST /api/todos`
+
+#### Request
 
 ```json
 POST /api/todos HTTP/1.1
 Host: localhost:10522
 Content-Type: application/json
 Cache-Control: no-cache
-
 {
   "task": "Mow the lawn",
   "deadlineUtc": "2015-11-11T20:05:32.773Z",
@@ -112,15 +116,16 @@ Cache-Control: no-cache
 
 ### View more information about a todo
 
-Operation: GET /api/todos/{id}
+Operation: `GET /api/todos/{id}`
 
+#### Request
 ```
 GET /api/todos/1 HTTP/1.1
 Host: localhost:10522
 Content-Type: application/json
 Cache-Control: no-cache
 ```
-### Response
+#### Response
 ```json
 {
   "id": 1,
@@ -150,8 +155,9 @@ Cache-Control: no-cache
 
 ### Update a todo (mark completed, etc.)
 
-Operation: PUT /api/todos/{id}
+Operation: `PUT /api/todos/{id}`
 
+#### Request
 ```json
 PUT /api/todos/1 HTTP/1.1
 Host: localhost:10522
@@ -166,14 +172,15 @@ Cache-Control: no-cache
 }
 ```
 
-### Response
+#### Response
 
 `200 OK`
 
 ### Delete a todo
 
-Operation: DELETE /api/todos/{id}
+Operation: `DELETE /api/todos/{id}`
 
+#### Request
 ```
 DELETE /api/todos/1 HTTP/1.1
 Host: localhost:10522
@@ -181,7 +188,7 @@ Content-Type: application/json
 Cache-Control: no-cache
 ```
 
-### Response
+#### Response
 
 ```
 204 No Content
@@ -198,66 +205,111 @@ Cache-Control: no-cache
 ### Response
 
 ```json
-{
-  "Items": [
-    {
-      "id": 1,
-      "task": "Take out the trash",
-      "deadlineUtc": "2015-11-11T20:05:32.773Z",
-      "completed": false,
-      "moreDetails": null,
-      "_links": [
-        {
-          "href": "http://localhost:10522/api/todos/1",
-          "rel": "self",
-          "method": "GET"
-        },
-        {
-          "href": "http://localhost:10522/api/todos/1",
-          "rel": "edit",
-          "method": "PUT"
-        },
-        {
-          "href": "http://localhost:10522/api/todos/1",
-          "rel": "delete",
-          "method": "DELETE"
-        }
-      ]
-    },
-    ...
-    ...
-    ...
-    {
-      "id": 25,
-      "task": "Take out the trash",
-      "deadlineUtc": "2015-11-11T20:05:32.773Z",
-      "completed": false,
-      "moreDetails": null,
-      "_links": [
-        {
-          "href": "http://localhost:10522/api/todos/25",
-          "rel": "self",
-          "method": "GET"
-        },
-        {
-          "href": "http://localhost:10522/api/todos/25",
-          "rel": "edit",
-          "method": "PUT"
-        },
-        {
-          "href": "http://localhost:10522/api/todos/25",
-          "rel": "delete",
-          "method": "DELETE"
-        }
-      ]
-    }
-  ]
-}
+[
+  {
+    "id": 2,
+    "task": "Mow the lawn",
+    "deadlineUtc": "2015-11-11T20:05:32.773Z",
+    "completed": false,
+    "moreDetails": "Make sure to mow the front and back yards",
+    "_links": [
+      {
+        "href": "http://localhost:10522/api/todos/2",
+        "rel": "self",
+        "method": "GET"
+      },
+      {
+        "href": "http://localhost:10522/api/todos/2",
+        "rel": "edit",
+        "method": "PUT"
+      },
+      {
+        "href": "http://localhost:10522/api/todos/2",
+        "rel": "delete",
+        "method": "DELETE"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "task": "Take out the trash",
+    "deadlineUtc": "2016-11-11T20:05:32.773Z",
+    "completed": false,
+    "moreDetails": "",
+    "_links": [
+      {
+        "href": "http://localhost:10522/api/todos/3",
+        "rel": "self",
+        "method": "GET"
+      },
+      {
+        "href": "http://localhost:10522/api/todos/3",
+        "rel": "edit",
+        "method": "PUT"
+      },
+      {
+        "href": "http://localhost:10522/api/todos/3",
+        "rel": "delete",
+        "method": "DELETE"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "task": "Sweep the floor",
+    "deadlineUtc": "2016-11-11T20:05:32.773Z",
+    "completed": true,
+    "moreDetails": "",
+    "_links": [
+      {
+        "href": "http://localhost:10522/api/todos/4",
+        "rel": "self",
+        "method": "GET"
+      },
+      {
+        "href": "http://localhost:10522/api/todos/4",
+        "rel": "edit",
+        "method": "PUT"
+      },
+      {
+        "href": "http://localhost:10522/api/todos/4",
+        "rel": "delete",
+        "method": "DELETE"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "task": "mop the floor",
+    "deadlineUtc": "2016-11-11T20:05:32.773Z",
+    "completed": false,
+    "moreDetails": "",
+    "_links": [
+      {
+        "href": "http://localhost:10522/api/todos/5",
+        "rel": "self",
+        "method": "GET"
+      },
+      {
+        "href": "http://localhost:10522/api/todos/5",
+        "rel": "edit",
+        "method": "PUT"
+      },
+      {
+        "href": "http://localhost:10522/api/todos/5",
+        "rel": "delete",
+        "method": "DELETE"
+      }
+    ]
+  }
+]
 ```
 
 The API supports OData query options, allowing the client to specify filtering, ordering, paging, etc.
 
-### See only todos that haven't been completed
+### See only todos that have not been completed
+
+Operation: `GET /api/todos?$filter=completed eq false`
 
 #### Request
 
@@ -270,82 +322,122 @@ Cache-Control: no-cache
 #### Response
 
 ```
-{
-  "Items": [
-    {
-      "id": 1,
-      "task": "Mow the lawn",
-      "deadlineUtc": "2015-11-11T20:05:32.773Z",
-      "completed": false,
-      "moreDetails": "Make sure to mow the front and back yards",
-      "_links": [
-        {
-          "href": "http://localhost:10522/api/todos/1",
-          "rel": "self",
-          "method": "GET"
-        },
-        {
-          "href": "http://localhost:10522/api/todos/1",
-          "rel": "edit",
-          "method": "PUT"
-        },
-        {
-          "href": "http://localhost:10522/api/todos/1",
-          "rel": "delete",
-          "method": "DELETE"
-        }
-      ]
-    },
-    {
-      "id": 2,
-      "task": "Mow the lawn",
-      "deadlineUtc": "2015-11-11T20:05:32.773Z",
-      "completed": false,
-      "moreDetails": "Make sure to mow the front and back yards",
-      "_links": [
-        {
-          "href": "http://localhost:10522/api/todos/2",
-          "rel": "self",
-          "method": "GET"
-        },
-        {
-          "href": "http://localhost:10522/api/todos/2",
-          "rel": "edit",
-          "method": "PUT"
-        },
-        {
-          "href": "http://localhost:10522/api/todos/2",
-          "rel": "delete",
-          "method": "DELETE"
-        }
-      ]
-    },
-    {
-      "id": 8,
-      "task": "Take out the trash",
-      "deadlineUtc": "2015-11-11T20:05:32.773Z",
-      "completed": false,
-      "moreDetails": null,
-      "_links": [
-        {
-          "href": "http://localhost:10522/api/todos/8",
-          "rel": "self",
-          "method": "GET"
-        },
-        {
-          "href": "http://localhost:10522/api/todos/8",
-          "rel": "edit",
-          "method": "PUT"
-        },
-        {
-          "href": "http://localhost:10522/api/todos/8",
-          "rel": "delete",
-          "method": "DELETE"
-        }
-      ]
-    }
-  ]
+[
+  {
+    "id": 2,
+    "task": "Mow the lawn",
+    "deadlineUtc": "2015-11-11T20:05:32.773Z",
+    "completed": false,
+    "moreDetails": "Make sure to mow the front and back yards",
+    "_links": [
+      {
+        "href": "http://localhost:10522/api/todos/2",
+        "rel": "self",
+        "method": "GET"
+      },
+      {
+        "href": "http://localhost:10522/api/todos/2",
+        "rel": "edit",
+        "method": "PUT"
+      },
+      {
+        "href": "http://localhost:10522/api/todos/2",
+        "rel": "delete",
+        "method": "DELETE"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "task": "Take out the trash",
+    "deadlineUtc": "2016-11-11T20:05:32.773Z",
+    "completed": false,
+    "moreDetails": "",
+    "_links": [
+      {
+        "href": "http://localhost:10522/api/todos/3",
+        "rel": "self",
+        "method": "GET"
+      },
+      {
+        "href": "http://localhost:10522/api/todos/3",
+        "rel": "edit",
+        "method": "PUT"
+      },
+      {
+        "href": "http://localhost:10522/api/todos/3",
+        "rel": "delete",
+        "method": "DELETE"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "task": "mop the floor",
+    "deadlineUtc": "2016-11-11T20:05:32.773Z",
+    "completed": false,
+    "moreDetails": "",
+    "_links": [
+      {
+        "href": "http://localhost:10522/api/todos/5",
+        "rel": "self",
+        "method": "GET"
+      },
+      {
+        "href": "http://localhost:10522/api/todos/5",
+        "rel": "edit",
+        "method": "PUT"
+      },
+      {
+        "href": "http://localhost:10522/api/todos/5",
+        "rel": "delete",
+        "method": "DELETE"
+      }
+    ]
+  }
+]
   ```
 
+### See overdue todos (todos that have not been completed and where todays date is past the deadline)
 
-As a user, when I see all the TODOs in the overview, if today's date is past the TODO's deadline, highlight it.
+Operation: `GET /api/todos?overdue=true`
+
+#### Request
+
+```
+GET /api/todos?overdue=true HTTP/1.1
+Host: localhost:10522
+Content-Type: application/json
+Cache-Control: no-cache
+```
+
+#### Response
+
+```json
+[
+  {
+    "id": 2,
+    "task": "Mow the lawn",
+    "deadlineUtc": "2015-11-11T20:05:32.773Z",
+    "completed": false,
+    "moreDetails": "Make sure to mow the front and back yards",
+    "_links": [
+      {
+        "href": "http://localhost:10522/api/todos/2",
+        "rel": "self",
+        "method": "GET"
+      },
+      {
+        "href": "http://localhost:10522/api/todos/2",
+        "rel": "edit",
+        "method": "PUT"
+      },
+      {
+        "href": "http://localhost:10522/api/todos/2",
+        "rel": "delete",
+        "method": "DELETE"
+      }
+    ]
+  }
+]
+```
