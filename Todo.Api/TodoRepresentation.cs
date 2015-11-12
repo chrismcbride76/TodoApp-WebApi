@@ -1,9 +1,10 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Todo.Api.Models;
 
-namespace Todo.Api.Models
+namespace Todo.Api
 {
-    public class ToDo: Resource
+    public class TodoRepresentation : Resource
     {
         public int id { get; set; }
 

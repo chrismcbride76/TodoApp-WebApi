@@ -12,33 +12,33 @@ namespace Todo.Api.Test
         [TestMethod]
         public void SetIdWhenAddingTodo()
         {
-            var todo = new ToDo
+            var todo = new TodoModel
             {
-                task = "My task"
+                Task = "My task"
             };
 
             var repository = new InMemoryTodoRepository();
             todo = repository.Add(todo);
-            todo.id.ShouldEqual(1);
+            todo.Id.ShouldEqual(1);
 
             todo = repository.Add(todo);
-            todo.id.ShouldEqual(2);
+            todo.Id.ShouldEqual(2);
 
             todo = repository.Add(todo);
-            todo.id.ShouldEqual(3);
+            todo.Id.ShouldEqual(3);
         }
 
         [TestMethod]
         public void GetTodo()
         {
-            var todo = new ToDo
+            var todo = new TodoModel
             {
-                task = "MyTask"
+                Task = "MyTask"
             };
 
             var repository = new InMemoryTodoRepository();
             repository.Add(todo);
-            repository.Get(todo.id).ShouldEqual(todo);
+            repository.Get(todo.Id).ShouldEqual(todo);
         }
 
         [TestMethod]
@@ -54,7 +54,7 @@ namespace Todo.Api.Test
             var repository = new InMemoryTodoRepository();
             for (int i = 0; i < 5; i++)
             {
-                repository.Add(new ToDo { task = i.ToString() });
+                repository.Add(new TodoModel { Task = i.ToString() });
             }
 
             repository.GetAll().Count().ShouldEqual(5);
@@ -63,12 +63,12 @@ namespace Todo.Api.Test
         public void RemoveTodo()
         {
             var repository = new InMemoryTodoRepository();
-            var addedTodo = repository.Add(new ToDo());
-            repository.Remove(addedTodo.id);
-            repository.Get(addedTodo.id).ShouldBeNull();
+            var addedTodo = repository.Add(new TodoModel());
+            repository.Remove(addedTodo.Id);
+            repository.Get(addedTodo.Id).ShouldBeNull();
 
-            repository.Remove(addedTodo.id);
-            repository.Get(addedTodo.id).ShouldBeNull();
+            repository.Remove(addedTodo.Id);
+            repository.Get(addedTodo.Id).ShouldBeNull();
         }
     }
 }

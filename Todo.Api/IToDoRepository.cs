@@ -5,13 +5,13 @@ namespace Todo.Api
 {
     public interface IToDoRepository
     {
-        IEnumerable<ToDo> GetAll();
-        ToDo Get(int id);
+        IEnumerable<TodoModel> GetAll();
+        TodoModel Get(int id);
 
-        ToDo Add(ToDo item);
+        TodoModel Add(TodoModel item);
 
         void Remove(int id);
 
-        bool Update(ToDo item);
+        bool Update(TodoModel item);
     }
 }
